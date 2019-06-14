@@ -30,11 +30,20 @@ class GardN:
 
 if __name__ == "__main__":
 	try:
+		print('Starting...')
 		garden = GardN()
+		garden.setup_output(18)
 
-		for i in range(10):
+		while True:
 			humidity, temperature = garden.read_DHT_sensor(17)
 			print(f'humidity: {humidity} | temperature: {temperature}')
+
+			if humidity > 18:
+				print('setting 18 low')
+				garden.set_pin(18, garden.LOW)
+			else:
+				print('setting 18 high')
+				garden.set_pin(18, garden.HIGH)
 			sleep(1)
 
 	except Exception as ex:
