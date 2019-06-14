@@ -1,5 +1,6 @@
+from time import sleep
 import RPi.GPIO as GPIO
-import time
+import Adafruit_DHT as DHT
 
 class GardN:
 	HIGH = GPIO.HIGH
@@ -20,6 +21,9 @@ class GardN:
 	def get_pin(self, pin):
 		return GPIO.input(pin)
 
+	def read_DHT_sensor(self, pin, sensor_type=DHT.DHT11):
+		return DHT.read_retry(sensor_type, pin)
+
 	def cleanup(self):
 		GPIO.cleanup()
 
@@ -27,16 +31,11 @@ class GardN:
 if __name__ == "__main__":
 	try:
 		garden = GardN()
-		garden.setup_output(18)
 
-		for i in range(5):
-			print(f'High')
-			garden.set_pin(18, garden.HIGH)
-			time.sleep(1)
-			print(f'Low')
-			garden.set_pin(18, garden.LOW)
-			time.sleep(1)
-
+		for i in range(10):
+			humidity, temperature = garden.read_DHT_sensor(17)
+			print(f'humidity: {humidity} | temperature: {temperature}')
+			sleep(1)
 
 	except Exception as ex:
 		print(f'**** ERROR ****\n{ex}')
