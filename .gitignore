@@ -105,3 +105,4 @@ venv.bak/
 
 #apple
 .AppleDouble/
+.DS_Store
