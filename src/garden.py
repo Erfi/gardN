@@ -1,8 +1,11 @@
 from time import sleep
+from datetime import datetime
 import RPi.GPIO as GPIO
 from dht_sensor import DHT_sensor
 from display import Display
 from atomizer import Atomizer
+from project_paths import LOG_PATH
+
 
 
 class GardN:
@@ -14,6 +17,10 @@ class GardN:
 		self.atomizer = Atomizer(pin=atomizer_pin)
 		self.dht = DHT_sensor(pin=dht_pin)
 		self.display = Display(**display_settings)
+
+	def log(self, message):
+		with open(LOG_PATH / 'log.txt', 'a') as fp:
+			fp.write(f'{message}\n')
 
 	def cleanup(self):
 		GPIO.cleanup()
@@ -27,18 +34,18 @@ if __name__ == "__main__":
 
 		while True:
 			humidity, temperature = garden.dht.read_sensor_data()
-			print(f'humidity: {humidity} | temperature: {temperature}')
+			garden.log(f'{datetime.now()} | Temperature: {temperature} Humidity:    {humidity}%')
 			garden.display.show(f'Temperature: {temperature}\nHumidity:    {humidity}%')
 
-			if humidity>90 or temperature>30:
-				print('--- Atomizer OFF ---')
+			if humidity>97 or temperature>30:
+				garden.log('--- Atomizer OFF ---')
 				garden.atomizer.turn_off()
 			else:
-				print('--- Atomizer ON ---')
+				garden.log('--- Atomizer ON ---')
 				garden.atomizer.turn_on()
 			sleep(5)
 	except Exception as ex:
-		print(f'**** ERROR ****\n{ex}')
+		garden.log(str(ex))
 
 	finally:
 		garden.cleanup()

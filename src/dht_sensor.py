@@ -8,8 +8,8 @@ class DHT_sensor:
 
 	def read_sensor_data(self):
 		humidity, temperature = DHT.read_retry(self.sensor_type, self.pin)
-		humidity = int(humidity) if isinstance(humidity, float) else None
-		temperature = int(temperature) if isinstance(temperature, float) else None
+		humidity = int(humidity) if isinstance(humidity, float) else -1
+		temperature = int(temperature) if isinstance(temperature, float) else -1
 		return humidity, temperature
 
 
