@@ -1,3 +1,4 @@
+from time import sleep
 import RPi.GPIO as GPIO
 
 class Atomizer:
@@ -12,4 +13,10 @@ class Atomizer:
 
 	def turn_off(self):
 		GPIO.output(self.pin, GPIO.LOW)
+
+	def pulse(self, sec_on, sec_off):
+		self.turn_on()
+		sleep(sec_on)
+		self.turn_off()
+		sleep(sec_off)
 
