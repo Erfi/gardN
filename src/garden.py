@@ -1,5 +1,6 @@
 from time import sleep
 from datetime import datetime
+import random
 import RPi.GPIO as GPIO
 from dht_sensor import DHT_sensor
 from display import Display
@@ -29,16 +30,12 @@ class GardN:
 if __name__ == "__main__":
 	try:
 		garden = GardN(atomizer_pin=23,
-						dht_pin=17,
+						dht_pin=18,
 						display_settings={'rs':26, 'en':19, 'd4':13, 'd5':6, 'd6':5, 'd7':11, 'cols':16, 'lines':2})
-		pulse_count = 0
 		while True:
-			garden.atomizer.pulse(sec_on=5, sec_off=10)
-			pulse_count = pulse_count + 1 if pulse_count <= 5 else 0
-			if pulse_count == 5:
-				humidity, temperature = garden.dht.read_sensor_data()
-				garden.log(f'{datetime.now()} | Temperature: {temperature} Humidity:    {humidity}%')
-				garden.display.show(f'Temperature: {temperature}\nHumidity:    {humidity}%')
+			humidity, temperature = garden.dht.read_sensor_data()
+			garden.log(f'{datetime.now()} | Temperature: {temperature} Humidity:    {humidity}%')
+		        garden.atomizer.pulse(sec_on=60, sec_off=300)
 
 	except Exception as ex:
 		garden.log(str(ex))
