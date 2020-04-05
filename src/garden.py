@@ -1,5 +1,6 @@
 import random
 import logging
+import concurrent.futures
 from time import sleep
 from datetime import datetime
 import RPi.GPIO as GPIO
@@ -37,11 +38,23 @@ if __name__ == "__main__":
         garden = GardN(atomizer_pin=23,
                        dht_pin=18,
                        display_settings={'rs':26, 'en':19, 'd4':13, 'd5':6, 'd6':5, 'd7':11, 'cols':16, 'lines':2})
-        
         while True:
+            """ 
+            create threads for:
+            - pulsing the atomizer,
+            - reading sensors
+            """
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+                logging.info('starting the thread in main')
+                executor.submit(garden.atomizer.pulse, sec_on=2, sec_off=2)
+                future_data = executor.submit(garden.dht.read_sensor_data)
+                sensor_data = future_data.result()
+                logging.info(f'sensor data has arrived: {sensor_data}')
+
+            logging.info('ending the thread in main')
+            
             # humidity, temperature = garden.dht.read_sensor_data()
             # garden.log(f'{datetime.now()} | Temperature: {temperature} Humidity:    {humidity}%')
-            garden.atomizer.pulse(sec_on=2, sec_off=2)
 
     except Exception as ex:
         logging.error('Exception occurred', exc_info=True)

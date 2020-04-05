@@ -1,5 +1,6 @@
 from time import sleep
 import RPi.GPIO as GPIO
+import logging
 
 class Atomizer:
 
@@ -15,8 +16,10 @@ class Atomizer:
 		GPIO.output(self.pin, GPIO.LOW)
 
 	def pulse(self, sec_on, sec_off):
+		logging.info('starting the pulse')
 		self.turn_on()
 		sleep(sec_on)
 		self.turn_off()
 		sleep(sec_off)
+		logging.info('ending the pulse')
 
