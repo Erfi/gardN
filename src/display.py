@@ -1,4 +1,6 @@
 import Adafruit_CharLCD.Adafruit_CharLCD as LCD
+import logging
+from time import sleep
 
 class Display(LCD):
 
@@ -7,5 +9,8 @@ class Display(LCD):
 		self.clear()
 
 	def show(self, message):
+		logging.info('Starting to display')
 		self.clear()
+		sleep(3)
 		self.message(message)
+		logging.info('finishing display')
