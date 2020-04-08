@@ -5,7 +5,7 @@ from time import sleep
 
 class DHT_sensor:
 
-	def __init__(self, pin, sensor_type=DHT.DHT22):
+	def __init__(self, pin, sensor_type=DHT.DHT11):
 		self.sensor_type = sensor_type
 		self.pin = pin
 		self.temperature = None
@@ -17,12 +17,25 @@ class DHT_sensor:
 			wait: seconds to wait until the next reading
 		"""
 		while True:
-			logging.info('starting to read sensor')
-			humidity, temperature = DHT.read_retry(self.sensor_type, self.pin)
-			self.humidity = int(humidity) if isinstance(humidity, float) else -1
-			self.temperature = int(temperature) if isinstance(temperature, float) else -1
+			logging.debug('starting to read sensor')
+			humidity = None
+			temperature = None
+			max_tries = 5
+			for i in range(max_tries):
+				logging.debug(f'sensor reading try {i}')
+				humidity, temperature = DHT.read_retry(self.sensor_type, self.pin)
+				logging.debug(f'sensor reading after try {i}: Humidity: {humidity} | Temperature: {temperature}')
+				if isinstance(humidity, float) and isinstance(temperature, float):
+					self.humidity = int(humidity)
+					self.temperature = int(temperature)
+					break
+				else:
+					sleep(3)
+			else:
+				self.humidity = -1
+				self.temperature  -1
 			logging.info(f'Humidity: {self.humidity} | Temperature: {self.temperature}')
-			logging.info('finishing sensor reading')
+			logging.debug('finishing sensor reading')
 			sleep(wait)
 
 

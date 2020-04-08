@@ -109,3 +109,6 @@ venv.bak/
 
 #log files
 log/
+
+#nohup file
+nohup.out

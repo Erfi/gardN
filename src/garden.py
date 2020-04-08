@@ -18,6 +18,7 @@ class GardN:
 
     def __init__(self, atomizer_pin, dht_pin, display_settings):
         GPIO.setmode(GPIO.BCM)
+        self.cleanup()
         self.atomizer = Atomizer(pin=atomizer_pin)
         self.dht = DHT_sensor(pin=dht_pin)
         self.display = Display(**display_settings) # not used bc RPI cannot provide enough power for all
@@ -39,19 +40,14 @@ if __name__ == "__main__":
         garden = GardN(atomizer_pin=23,
                        dht_pin=18,
                        display_settings={'rs':26, 'en':19, 'd4':13, 'd5':6, 'd6':5, 'd7':11, 'cols':16, 'lines':2})
-        while True:
-            """ 
-            create threads for:
-            - pulsing the atomizer,
-            - reading sensors
-            """
-
-            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-                logging.info('starting the thread in main')
-                executor.submit(garden.atomizer.pulse, sec_on=5, sec_off=5)
-                future_data = executor.submit(garden.dht.read_sensor_data)
-            logging.info('ending the thread in main')
-            
+        """ 
+        create threads (daemons) for:
+        - pulsing the atomizer,
+        - reading sensors
+        """
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+            executor.submit(garden.atomizer.pulse, sec_on=300, sec_off=2400)
+            executor.submit(garden.dht.read_sensor_data, wait=300)            
 
     except Exception as ex:
         logging.error('Exception occurred', exc_info=True)

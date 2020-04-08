@@ -16,10 +16,11 @@ class Atomizer:
 		GPIO.output(self.pin, GPIO.LOW)
 
 	def pulse(self, sec_on, sec_off):
-		logging.info('starting the pulse')
-		self.turn_on()
-		sleep(sec_on)
-		self.turn_off()
-		sleep(sec_off)
-		logging.info('ending the pulse')
+		while True:
+			logging.info('Pulsing')
+			self.turn_on()
+			sleep(sec_on)
+			logging.debug('ending the pulse')
+			self.turn_off()
+			sleep(sec_off)
 
