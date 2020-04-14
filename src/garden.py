@@ -46,7 +46,7 @@ if __name__ == "__main__":
         - reading sensors
         """
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-            executor.submit(garden.atomizer.pulse, sec_on=300, sec_off=2400)
+            executor.submit(garden.atomizer.pulse, sec_on=180, sec_off=2400)
             executor.submit(garden.dht.read_sensor_data, wait=300)            
 
     except Exception as ex:
